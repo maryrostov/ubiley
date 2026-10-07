@@ -176,7 +176,9 @@
     <button class="btn" id="startBtn" onclick="startCamera()">Включить камеру 📸</button>
     <button class="btn" id="snapBtn" onclick="takePhoto()" style="display:none;">Сделать снимок ✅</button>
 </section>
-
+<script>
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+</script>
 <script type="module">
     // ===== FIREBASE =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
