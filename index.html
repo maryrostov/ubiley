@@ -253,20 +253,26 @@
 </section>
 
 <script>
-const fileInput = document.getElementById('cameraInput');
+    function showPage3() {
+        document.getElementById('page3').classList.add('active');
+    }
+    function showPage4() {
+        document.getElementById('page4').classList.add('active');
+    }
+    const fileInput = document.getElementById('cameraInput');
 
-fileInput.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+    fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const base64Image = e.target.result.split(',')[1];
-        console.log("Фото получено, размер:", base64Image.length);
-        // sendToAI(base64Image);  ← пока закомментировано, ИИ подключим позже
-    };
-    reader.readAsDataURL(file);
-});
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const base64Image = e.target.result.split(',')[1];
+            console.log("Фото получено, размер:", base64Image.length);
+            // sendToAI(base64Image);  ← пока закомментировано, ИИ подключим позже
+        };
+        reader.readAsDataURL(file);
+    });
 </script>
 
 </body>
