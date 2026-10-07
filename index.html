@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>60 лет ВТиАСУ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* ===== КОНТЕЙНЕР СО СВАЙПОМ (страницы 1 и 2) ===== */
+        .app {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .app::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Страницы внутри свайпа */
+        .app .page {
+            height: 100vh;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            position: relative;
+        }
+
+        /* ===== СТРАНИЦА 1: ГЛАВНАЯ ===== */
+        .page-hero {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+
+        .page-hero .emoji {
+            font-size: 72px;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeUp 1s ease-out 0.2s forwards;
+        }
+
+        .page-hero h1 {
+            font-size: 64px;
+            color: #ffd700;
+            text-shadow: 2px 2px 12px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: fadeUp 1s ease-out 0.6s forwards;
+        }
+
+        .page-hero h2 {
+            font-size: 26px;
+            font-weight: 400;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeUp 1s ease-out 1s forwards;
+        }
+
+        .page-hero p {
+            font-size: 17px;
+            line-height: 1.6;
+            max-width: 500px;
+            opacity: 0;
+            animation: fadeUp 1s ease-out 1.4s forwards;
+        }
+
+        .page-hero p + p {
+            margin-top: 15px;
+            animation-delay: 1.8s;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .swipe-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            opacity: 0.7;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50%      { transform: translateX(-50%) translateY(8px); }
+        }
+
+        /* ===== СТРАНИЦА 2: ИСТОРИЯ ===== */
+        .page-2 {
+            background: #0f1b3d;
+            color: white;
+        }
+
+        .page-2 h1 {
+            font-size: 32px;
+            color: #ffd700;
+            margin-bottom: 25px;
+        }
+
+        .page-2 p {
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 500px;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        /* ===== КНОПКА ===== */
+        .btn {
+            margin-top: 30px;
+            padding: 15px 45px;
+            font-size: 18px;
+            font-weight: bold;
+            background: #ffd700;
+            color: #1e3c72;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ===== ОТДЕЛЬНЫЕ ЭКРАНЫ (страницы 3 и 4) ===== */
+        .overlay-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            transform: translateY(100%);
+            transition: transform 0.5s ease;
+            z-index: 10;
+        }
+
+        .overlay-page.active {
+            transform: translateY(0);
+        }
+
+        /* Страница 3: инструкция */
+        .page-3 {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+        }
+
+        .page-3 h1 {
+            font-size: 32px;
+            color: #ffd700;
+            margin-bottom: 25px;
+        }
+
+        .page-3 p {
+            font-size: 18px;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+
+        /* Страница 4: задания */
+        .page-4 {
+            background: #0a1330;
+            color: white;
+        }
+
+        .page-4 h1 {
+            font-size: 32px;
+            color: #ffd700;
+            margin-bottom: 25px;
+        }
+
+        .page-4 p {
+            font-size: 16px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== СВАЙП-КОНТЕЙНЕР (страницы 1 и 2) ===== -->
+<div class="app" id="app">
+
+    <!-- Страница 1 -->
+    <section class="page page-hero">
+        <div class="emoji">🎉</div>
+        <h1>60 лет</h1>
+        <h2>Кафедре ВТиАСУ</h2>
+        <p>Поздравляем с юбилеем! Шестьдесят лет — это целая эпоха, наполненная достижениями, открытиями и талантливыми выпускниками.</p>
+        <p>Пусть впереди будет ещё много лет развития, инноваций и успехов!</p>
+        <div class="swipe-hint">Свайп вниз ↓</div>
+    </section>
+
+    <!-- Страница 2 -->
+    <section class="page page-2">
+        <h1>История кафедры</h1>
+        <p>Кафедра «Вычислительная техника и автоматизированные системы управления» была основана в ... году.</p>
+        <p>За 60 лет кафедра выпустила тысячи специалистов, которые работают в ведущих компаниях России и мира.</p>
+        <p>Студенты изучают системное программное обеспечение, архитектуру вычислительных систем, разработку электроники и многое другое.</p>
+        <button class="btn" onclick="showPage3()">К заданиям →</button>
+    </section>
+
+</div>
+
+<!-- Страница 3: инструкция -->
+<section class="overlay-page page-3" id="page3">
+    <h1>Как играть</h1>
+    <p>Попробуй выполнить все задания с настоящей ИИ-моделью! Внимательно читай каждое задание, выполняй и загружай фото на обработку.</p>
+    <p style="margin-top: 20px;">Жми «Начать», если готов :)</p>
+    <button class="btn" onclick="showPage4()">Начать 🚀</button>
+</section>
+
+<!-- Страница 4: задания -->
+<section class="overlay-page page-4" id="page4">
+    <h1>Задание 1</h1>
+    <p>Сфотографируйся с преподавателем кафедры</p>
+
+    <!-- Скрытое поле для камеры -->
+    <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
+
+    <!-- Кнопка, которая открывает камеру -->
+    <button class="btn" onclick="document.getElementById('cameraInput').click()">
+        Сделать фото 📸
+    </button>
+</section>
+
+<script>
+const fileInput = document.getElementById('cameraInput');
+
+fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const base64Image = e.target.result.split(',')[1];
+        console.log("Фото получено, размер:", base64Image.length);
+        // sendToAI(base64Image);  ← пока закомментировано, ИИ подключим позже
+    };
+    reader.readAsDataURL(file);
+});
+</script>
+
+</body>
+</html>
