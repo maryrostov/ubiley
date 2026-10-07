@@ -252,24 +252,72 @@
     </button>
 </section>
 
-<script>
-    function showPage3() {
+<script type="module">
+    // ===== 1. ИМПОРТЫ FIREBASE =====
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+    import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js";
+
+    // ===== 2. ТВОЙ КОНФИГ =====
+    const firebaseConfig = {
+        apiKey: "AIzaSyAWSXVRpl2nyVtSWQFTrHkwdcyy-4R_WPg",
+        authDomain: "ubiley-ai.firebaseapp.com",
+        projectId: "ubiley-ai",
+        storageBucket: "ubiley-ai.firebasestorage.app",
+        messagingSenderId: "411689603335",
+        appId: "1:411689603335:web:5c4e65abec7d3d9b8cf5a2",
+        measurementId: "G-MMPSRQY074"
+    };
+
+    // ===== 3. ИНИЦИАЛИЗАЦИЯ FIREBASE И ИИ =====
+    const app = initializeApp(firebaseConfig);
+    const ai = getAI(app, { backend: new GoogleAIBackend() });
+    const model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
+
+    // ===== 4. ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ =====
+    window.showPage3 = function() {
         document.getElementById('page3').classList.add('active');
-    }
-    function showPage4() {
+    };
+
+    window.showPage4 = function() {
         document.getElementById('page4').classList.add('active');
-    }
+    };
+
+    // ===== 5. ОБРАБОТКА ФОТО =====
     const fileInput = document.getElementById('cameraInput');
 
-    fileInput.addEventListener('change', (event) => {
+    fileInput.addEventListener('change', async (event) => {
         const file = event.target.files[0];
         if (!file) return;
 
+        // Показываем пользователю, что идёт проверка
+        alert("Фото отправлено на проверку нейросетью...");
+
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
             const base64Image = e.target.result.split(',')[1];
-            console.log("Фото получено, размер:", base64Image.length);
-            // sendToAI(base64Image);  ← пока закомментировано, ИИ подключим позже
+
+            // Промпт для ИИ — можешь менять под каждое задание
+            const prompt = "Посмотри на это фото. На нём есть хотя бы один человек? Ответь строго одним словом: ДА или НЕТ.";
+
+            const imagePart = {
+                inlineData: { data: base64Image, mimeType: "image/jpeg" }
+            };
+
+            try {
+                const result = await model.generateContent([prompt, imagePart]);
+                const responseText = result.response.text().trim();
+                console.log("Ответ ИИ:", responseText);
+
+                if (responseText.toUpperCase().includes("ДА")) {
+                    alert("✅ Задание выполнено! На фото есть человек.");
+                    // Здесь потом можно переключать на следующее задание
+                } else {
+                    alert("❌ Не получилось. Попробуй сфотографироваться с преподавателем.");
+                }
+            } catch (error) {
+                console.error("Ошибка ИИ:", error);
+                alert("Ошибка проверки. Попробуй ещё раз.\n" + error.message);
+            }
         };
         reader.readAsDataURL(file);
     });
