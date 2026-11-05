@@ -177,10 +177,9 @@
     <button class="btn" id="snapBtn" onclick="takePhoto()" style="display:none;">Сделать снимок ✅</button>
 </section>
 <script>
-    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = 26844557-25DE-4BD0-BF2C-F72805618EE9;
 </script>
 <script type="module">
-    // ===== FIREBASE =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
     import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js";
 
@@ -196,7 +195,7 @@
 
     const app = initializeApp(firebaseConfig);
     const ai = getAI(app, { backend: new GoogleAIBackend('global') });
-    const model = getGenerativeModel(ai, { model: "gemini-3.8-flash" });
+    const model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
 
     // ===== ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ =====
     window.showPage3 = function() {
@@ -238,7 +237,6 @@
         await checkPhoto(base64Image);
     };
 
-    // ===== ПРОВЕРКА ЧЕРЕЗ ИИ =====
     async function checkPhoto(base64Image) {
         const prompt = "На фото есть хотя бы один человек? Ответь строго одним словом: ДА или НЕТ.";
         const imagePart = { inlineData: { data: base64Image, mimeType: "image/jpeg" } };
