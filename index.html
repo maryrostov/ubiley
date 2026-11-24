@@ -404,12 +404,13 @@
 
 <!-- ===== FIREBASE И ИИ ===== -->
 <script>
-    self.FIREBASE_APPCHECK_DEBUG_TOKEN = "26844557-25DE-4BD0-BF2C-F72805618EE9";
+    // 👇 НОВЫЙ ТОКЕН ОТ ТЕБЯ
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = "EBCAF8AE-F336-4E7D-9B2B-12FF24D8783D";
 </script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
     import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js";
-    // 👇 ДОБАВЛЕН ИМПОРТ ДЛЯ APP CHECK
+    // Импортируем App Check
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
 
     const firebaseConfig = {
@@ -426,10 +427,9 @@
     try {
         const app = initializeApp(firebaseConfig);
 
-        // 👇 ИНИЦИАЛИЗАЦИЯ APP CHECK
-        // Это связывает отладочный токен с запросами к Firebase
+        // Инициализируем App Check, чтобы Firebase видел наш токен
         initializeAppCheck(app, {
-            provider: new ReCaptchaEnterpriseProvider('6Ld...'), // Сюда можно вставить любой ключ, для отладки он не проверяется
+            provider: new ReCaptchaEnterpriseProvider('6Ld...'), // Заглушка для отладки
             isTokenAutoRefreshEnabled: true
         });
 
