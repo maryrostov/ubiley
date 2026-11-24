@@ -391,7 +391,7 @@
         <div class="result-message" id="resultMessage"></div>
     </div>
 
-    <!-- ===== ЭКРАН 3: ЧАТ ===== -->
+    <!-- ===== ЭКРАН 3: ЧАТ (Появляется только после 5 заданий) ===== -->
     <div class="screen chat-screen" id="screenChat">
         <div class="chat-header">
             <div class="avatar">🎓</div>
@@ -415,7 +415,7 @@
 
 <!-- ===== FIREBASE И ИИ ===== -->
 <script>
-    // Отладочный токен для App Check (если требуется)
+    // Отладочный токен для App Check
     self.FIREBASE_APPCHECK_DEBUG_TOKEN = "26844557-25DE-4BD0-BF2C-F72805618EE9";
 </script>
 <script type="module">
@@ -437,7 +437,6 @@
     try {
         const app = initializeApp(firebaseConfig);
         const ai = getAI(app, { backend: new GoogleAIBackend('global') });
-        // Используем стабильную модель для обработки изображений
         model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
         console.log("Firebase AI инициализирован успешно");
     } catch (e) {
@@ -505,7 +504,6 @@
 
     // ===== ИНИЦИАЛИЗАЦИЯ ПРОГРЕСС-БАРА =====
     function initProgressBar() {
-        // Создаем узлы
         for (let i = 0; i < tasks.length; i++) {
             const node = document.createElement('div');
             node.className = 'progress-node';
@@ -527,11 +525,9 @@
             }
         });
 
-        // Обновляем линию
         const percent = (completedTasks / tasks.length) * 100;
         progressFill.style.width = `${percent}%`;
 
-        // Если все пройдены, скрываем прогресс-бар
         if (completedTasks >= tasks.length) {
             setTimeout(() => {
                 progressHeader.classList.remove('visible');
@@ -570,14 +566,12 @@
             <p>${task.description}</p>
         `;
 
-        // Сброс камеры
         stopCamera();
         cameraPlaceholder.style.display = 'flex';
         video.style.display = 'none';
         resultMessage.textContent = '';
         resultMessage.className = 'result-message';
 
-        // Кнопки
         taskActions.innerHTML = `
             <button class="btn" id="startBtn" onclick="startCamera()">Включить камеру 📸</button>
             <button class="btn" id="snapBtn" onclick="takePhoto()" style="display:none;">Сделать снимок ✅</button>
@@ -646,11 +640,9 @@
                 resultMessage.textContent = "✅ Задание выполнено!";
                 resultMessage.className = 'result-message success';
 
-                // Завершаем задание
                 completedTasks++;
                 updateProgressBar();
 
-                // Переход к следующему
                 setTimeout(() => {
                     currentTaskIndex++;
                     loadTask(currentTaskIndex);
@@ -659,7 +651,6 @@
             } else {
                 resultMessage.textContent = "❌ Не получилось. Попробуй ещё раз.";
                 resultMessage.className = 'result-message error';
-                // Возвращаем кнопку камеры
                 document.getElementById('startBtn').style.display = 'inline-block';
             }
         } catch (error) {
@@ -679,17 +670,14 @@
     };
 
     window.sendQuickReply = function(question) {
-        // Добавляем сообщение пользователя
         const userMsg = document.createElement('div');
         userMsg.className = 'message user';
         userMsg.textContent = question;
         chatMessages.appendChild(userMsg);
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // Ищем ответ
         const answer = botAnswers[question] || "Извини, я пока не знаю ответа на этот вопрос. Но я уверен, что на кафедре тебе расскажут о ней много интересного!";
 
-        // Добавляем ответ бота с задержкой
         setTimeout(() => {
             const botMsg = document.createElement('div');
             botMsg.className = 'message bot';
