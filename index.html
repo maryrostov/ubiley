@@ -48,7 +48,7 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             z-index: 100;
-            display: none; /* Скрыт на первом экране */
+            display: none;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         .progress-header.visible { display: block; }
@@ -62,7 +62,6 @@
             margin: 0 auto;
         }
 
-        /* Линия прогресса */
         .progress-line-bg {
             position: absolute;
             top: 50%;
@@ -87,7 +86,6 @@
             width: 0%;
         }
 
-        /* Узлы прогресса */
         .progress-node {
             width: 32px;
             height: 32px;
@@ -121,11 +119,9 @@
         }
         .progress-node.completed span { display: none; }
 
-        /* ===== ЭКРАНЫ (ПЕРЕКЛЮЧЕНИЕ) ===== */
-        /* Вот тут я убрал display: none для всех экранов и добавил строгое скрытие */
         .screen {
             flex: 1;
-            display: none !important; /* Жестко скрываем все экраны */
+            display: none !important;
             flex-direction: column;
             padding: 20px;
             overflow-y: auto;
@@ -136,12 +132,10 @@
             height: 100%;
         }
 
-        /* Показываем ТОЛЬКО тот экран, у которого есть класс active */
         .screen.active {
             display: flex !important;
         }
 
-        /* ===== ГЛАВНЫЙ ЭКРАН ===== */
         .hero-screen {
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
             color: var(--text-light);
@@ -175,10 +169,9 @@
         .btn:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ===== ЭКРАН ЗАДАНИЙ ===== */
         .task-screen {
             background: var(--light-bg);
-            padding-top: 80px; /* Отступ под прогресс-бар */
+            padding-top: 80px;
             justify-content: flex-start;
             align-items: center;
         }
@@ -255,14 +248,13 @@
         .result-message.success { color: var(--success-green); }
         .result-message.error { color: var(--accent-red); }
 
-        /* ===== ЭКРАН ЧАТА ===== */
         .chat-screen {
             background: #e5e7eb;
             padding: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            padding-top: 0; /* Убрал отступ, так как прогресс-бар скрывается перед чатом */
+            padding-top: 0;
         }
 
         .chat-header {
@@ -352,7 +344,6 @@
             transform: scale(0.95);
         }
 
-        /* ===== АДАПТАЦИЯ ===== */
         @media (max-width: 480px) {
             .hero-screen h1 { font-size: 56px; }
             .hero-screen h2 { font-size: 22px; }
@@ -364,17 +355,13 @@
 <body>
 
 <div class="app-container">
-
-    <!-- ===== ПРОГРЕСС-БАР (Скрыт изначально) ===== -->
     <div class="progress-header" id="progressHeader">
         <div class="progress-bar-container" id="progressBar">
             <div class="progress-line-bg"></div>
             <div class="progress-line-fill" id="progressFill"></div>
-            <!-- Узлы будут сгенерированы JS -->
         </div>
     </div>
 
-    <!-- ===== ЭКРАН 1: ГЛАВНЫЙ ===== -->
     <div class="screen hero-screen active" id="screenHero">
         <div class="emoji">🎉</div>
         <h1>60 лет</h1>
@@ -384,23 +371,17 @@
         <button class="btn" onclick="startQuest()">Начать путешествие 🚀</button>
     </div>
 
-    <!-- ===== ЭКРАН 2: ЗАДАНИЯ ===== -->
     <div class="screen task-screen" id="screenTask">
-        <div class="task-card" id="taskCard">
-            <!-- Содержимое задания будет меняться через JS -->
-        </div>
+        <div class="task-card" id="taskCard"></div>
         <div class="camera-container" id="cameraContainer">
             <video id="video" autoplay playsinline></video>
             <div class="camera-placeholder" id="cameraPlaceholder">📷 Камера выключена</div>
         </div>
         <canvas id="canvas"></canvas>
-        <div class="task-actions" id="taskActions">
-            <!-- Кнопки будут меняться через JS -->
-        </div>
+        <div class="task-actions" id="taskActions"></div>
         <div class="result-message" id="resultMessage"></div>
     </div>
 
-    <!-- ===== ЭКРАН 3: ЧАТ (Появляется только после 5 заданий) ===== -->
     <div class="screen chat-screen" id="screenChat">
         <div class="chat-header">
             <div class="avatar">🎓</div>
@@ -419,19 +400,18 @@
             <button class="quick-reply-btn" onclick="sendQuickReply('Какие известные выпускники?')">⭐ Выпускники</button>
         </div>
     </div>
-
 </div>
 
 <!-- ===== FIREBASE И ИИ ===== -->
 <script>
-    // Отладочный токен для App Check
     self.FIREBASE_APPCHECK_DEBUG_TOKEN = "26844557-25DE-4BD0-BF2C-F72805618EE9";
 </script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
     import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js";
+    // 👇 ДОБАВЛЕН ИМПОРТ ДЛЯ APP CHECK
+    import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
 
-    // ===== КОНФИГУРАЦИЯ FIREBASE =====
     const firebaseConfig = {
         apiKey: "AIzaSyAWSXVRpl2nyVtSWQFTrHkwdcyy-4R_WPg",
         authDomain: "ubiley-ai.firebaseapp.com",
@@ -445,6 +425,14 @@
     let model = null;
     try {
         const app = initializeApp(firebaseConfig);
+
+        // 👇 ИНИЦИАЛИЗАЦИЯ APP CHECK
+        // Это связывает отладочный токен с запросами к Firebase
+        initializeAppCheck(app, {
+            provider: new ReCaptchaEnterpriseProvider('6Ld...'), // Сюда можно вставить любой ключ, для отладки он не проверяется
+            isTokenAutoRefreshEnabled: true
+        });
+
         const ai = getAI(app, { backend: new GoogleAIBackend('global') });
         model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
         console.log("Firebase AI инициализирован успешно");
@@ -453,50 +441,18 @@
         alert("Ошибка подключения к ИИ. Проверьте интернет и настройки Firebase.");
     }
 
-    // ===== ДАННЫЕ ЗАДАНИЙ =====
     const tasks = [
-        {
-            id: 1,
-            title: "Задание 1",
-            description: "Сфотографируйся с преподавателем кафедры ВТиАСУ",
-            icon: "📸",
-            prompt: "На фото есть хотя бы один человек и преподаватель (взрослый человек)? Ответь строго одним словом: ДА или НЕТ."
-        },
-        {
-            id: 2,
-            title: "Задание 2",
-            description: "Сфотографируй логотип или вывеску с названием кафедры (ВТиАСУ)",
-            icon: "🔤",
-            prompt: "На фото есть текст или логотип, связанный с университетом или кафедрой? Ответь строго одним словом: ДА или НЕТ."
-        },
-        {
-            id: 3,
-            title: "Задание 3",
-            description: "Сделай селфи на фоне корпуса университета",
-            icon: "🏛️",
-            prompt: "На фото есть человек на фоне здания (улица или архитектура)? Ответь строго одним словом: ДА или НЕТ."
-        },
-        {
-            id: 4,
-            title: "Задание 4",
-            description: "Найди и сфотографируй что-то, связанное с вычислительной техникой (компьютер, микросхема, код)",
-            icon: "💻",
-            prompt: "На фото есть компьютер, ноутбук, микросхема или экран с кодом? Ответь строго одним словом: ДА или НЕТ."
-        },
-        {
-            id: 5,
-            title: "Задание 5",
-            description: "Сфотографируй своего друга или одногруппника, который тоже любит ВТиАСУ",
-            icon: "🤝",
-            prompt: "На фото есть хотя бы один человек? Ответь строго одним словом: ДА или НЕТ."
-        }
+        { id: 1, title: "Задание 1", description: "Сфотографируйся с преподавателем кафедры ВТиАСУ", icon: "📸", prompt: "На фото есть хотя бы один человек и преподаватель (взрослый человек)? Ответь строго одним словом: ДА или НЕТ." },
+        { id: 2, title: "Задание 2", description: "Сфотографируй логотип или вывеску с названием кафедры (ВТиАСУ)", icon: "🔤", prompt: "На фото есть текст или логотип, связанный с университетом или кафедрой? Ответь строго одним словом: ДА или НЕТ." },
+        { id: 3, title: "Задание 3", description: "Сделай селфи на фоне корпуса университета", icon: "🏛️", prompt: "На фото есть человек на фоне здания (улица или архитектура)? Ответь строго одним словом: ДА или НЕТ." },
+        { id: 4, title: "Задание 4", description: "Найди и сфотографируй что-то, связанное с вычислительной техникой (компьютер, микросхема, код)", icon: "💻", prompt: "На фото есть компьютер, ноутбук, микросхема или экран с кодом? Ответь строго одним словом: ДА или НЕТ." },
+        { id: 5, title: "Задание 5", description: "Сфотографируй своего друга или одногруппника, который тоже любит ВТиАСУ", icon: "🤝", prompt: "На фото есть хотя бы один человек? Ответь строго одним словом: ДА или НЕТ." }
     ];
 
     let currentTaskIndex = 0;
     let stream = null;
     let completedTasks = 0;
 
-    // ===== DOM ЭЛЕМЕНТЫ =====
     const screenHero = document.getElementById('screenHero');
     const screenTask = document.getElementById('screenTask');
     const screenChat = document.getElementById('screenChat');
@@ -511,7 +467,6 @@
     const resultMessage = document.getElementById('resultMessage');
     const chatMessages = document.getElementById('chatMessages');
 
-    // ===== ИНИЦИАЛИЗАЦИЯ ПРОГРЕСС-БАРА =====
     function initProgressBar() {
         for (let i = 0; i < tasks.length; i++) {
             const node = document.createElement('div');
@@ -527,24 +482,16 @@
         const nodes = document.querySelectorAll('.progress-node');
         nodes.forEach((node, index) => {
             node.classList.remove('active', 'completed');
-            if (index < completedTasks) {
-                node.classList.add('completed');
-            } else if (index === completedTasks) {
-                node.classList.add('active');
-            }
+            if (index < completedTasks) { node.classList.add('completed'); }
+            else if (index === completedTasks) { node.classList.add('active'); }
         });
-
         const percent = (completedTasks / tasks.length) * 100;
         progressFill.style.width = `${percent}%`;
-
         if (completedTasks >= tasks.length) {
-            setTimeout(() => {
-                progressHeader.classList.remove('visible');
-            }, 500);
+            setTimeout(() => { progressHeader.classList.remove('visible'); }, 500);
         }
     }
 
-    // ===== ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ =====
     window.startQuest = function() {
         screenHero.classList.remove('active');
         screenTask.classList.add('active');
@@ -561,71 +508,48 @@
         progressHeader.classList.remove('visible');
     }
 
-    // ===== ЗАГРУЗКА ЗАДАНИЯ =====
     function loadTask(index) {
-        if (index >= tasks.length) {
-            showChat();
-            return;
-        }
-
+        if (index >= tasks.length) { showChat(); return; }
         const task = tasks[index];
-        taskCard.innerHTML = `
-            <div class="task-icon">${task.icon}</div>
-            <h2>${task.title}</h2>
-            <p>${task.description}</p>
-        `;
-
+        taskCard.innerHTML = `<div class="task-icon">${task.icon}</div><h2>${task.title}</h2><p>${task.description}</p>`;
         stopCamera();
         cameraPlaceholder.style.display = 'flex';
         video.style.display = 'none';
         resultMessage.textContent = '';
         resultMessage.className = 'result-message';
-
         taskActions.innerHTML = `
             <button class="btn" id="startBtn" onclick="startCamera()">Включить камеру 📸</button>
             <button class="btn" id="snapBtn" onclick="takePhoto()" style="display:none;">Сделать снимок ✅</button>
         `;
     }
 
-    // ===== КАМЕРА =====
     window.startCamera = async function() {
         try {
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'user' }
-            });
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
             video.srcObject = stream;
             video.style.display = 'block';
             cameraPlaceholder.style.display = 'none';
             document.getElementById('startBtn').style.display = 'none';
             document.getElementById('snapBtn').style.display = 'inline-block';
-        } catch (err) {
-            alert("Не удалось открыть камеру: " + err.message);
-        }
+        } catch (err) { alert("Не удалось открыть камеру: " + err.message); }
     };
 
     function stopCamera() {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            stream = null;
-        }
+        if (stream) { stream.getTracks().forEach(track => track.stop()); stream = null; }
     }
 
     window.takePhoto = async function() {
         if (!video.videoWidth) return;
-
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         canvas.getContext('2d').drawImage(video, 0, 0);
-
         stopCamera();
         video.style.display = 'none';
         cameraPlaceholder.style.display = 'flex';
         document.getElementById('snapBtn').style.display = 'none';
-
         const base64Image = canvas.toDataURL('image/jpeg').split(',')[1];
         resultMessage.textContent = "Отправка на проверку...";
         resultMessage.className = 'result-message';
-
         await checkPhoto(base64Image);
     };
 
@@ -635,28 +559,19 @@
             resultMessage.className = 'result-message error';
             return;
         }
-
         const task = tasks[currentTaskIndex];
         const prompt = task.prompt;
         const imagePart = { inlineData: { data: base64Image, mimeType: "image/jpeg" } };
-
         try {
             const result = await model.generateContent([prompt, imagePart]);
             const responseText = result.response.text().trim();
             console.log("Ответ ИИ:", responseText);
-
             if (responseText.toUpperCase().includes("ДА")) {
                 resultMessage.textContent = "✅ Задание выполнено!";
                 resultMessage.className = 'result-message success';
-
                 completedTasks++;
                 updateProgressBar();
-
-                setTimeout(() => {
-                    currentTaskIndex++;
-                    loadTask(currentTaskIndex);
-                }, 1200);
-
+                setTimeout(() => { currentTaskIndex++; loadTask(currentTaskIndex); }, 1200);
             } else {
                 resultMessage.textContent = "❌ Не получилось. Попробуй ещё раз.";
                 resultMessage.className = 'result-message error';
@@ -670,7 +585,6 @@
         }
     }
 
-    // ===== ЧАТ =====
     const botAnswers = {
         "Какие специальности есть на кафедре?": "На кафедре ВТиАСУ готовят специалистов по направлениям «Вычислительная техника», «Автоматизированные системы управления», «Программная инженерия» и «Информационные системы». Студенты изучают архитектуру ЭВМ, системное ПО, электронику и разработку автоматизированных систем.",
         "Кто преподает на кафедре?": "На кафедре работают опытные преподаватели, доценты и профессора, многие из которых являются практиками из IT-индустрии. Они ведут такие дисциплины, как «Архитектура вычислительных систем», «Системное программирование», «Теория автоматического управления» и другие.",
@@ -684,9 +598,7 @@
         userMsg.textContent = question;
         chatMessages.appendChild(userMsg);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-
         const answer = botAnswers[question] || "Извини, я пока не знаю ответа на этот вопрос. Но я уверен, что на кафедре тебе расскажут о ней много интересного!";
-
         setTimeout(() => {
             const botMsg = document.createElement('div');
             botMsg.className = 'message bot';
@@ -695,8 +607,6 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }, 600);
     };
-
 </script>
-
 </body>
 </html>
