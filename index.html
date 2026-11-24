@@ -410,7 +410,6 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
     import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js";
-    // Импортируем App Check
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
 
     const firebaseConfig = {
@@ -427,14 +426,14 @@
     try {
         const app = initializeApp(firebaseConfig);
 
-        // Инициализируем App Check, чтобы Firebase видел наш токен
         initializeAppCheck(app, {
-            provider: new ReCaptchaEnterpriseProvider('6Ld...'), // Заглушка для отладки
+            provider: new ReCaptchaEnterpriseProvider('6Ld...'),
             isTokenAutoRefreshEnabled: true
         });
 
         const ai = getAI(app, { backend: new GoogleAIBackend('global') });
-        model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
+        // 👇 ЗАМЕНИЛИ МОДЕЛЬ НА АКТУАЛЬНУЮ
+        model = getGenerativeModel(ai, { model: "gemini-3.8-flash" });
         console.log("Firebase AI инициализирован успешно");
     } catch (e) {
         console.error("Ошибка инициализации Firebase:", e);
