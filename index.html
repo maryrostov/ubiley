@@ -562,16 +562,19 @@
         resultMessage.innerHTML = `<div class="loader"></div> Проверяем...`;
         resultMessage.className = 'result-message';
 
-        await checkPhoto(base64Image);
+        await checkPhotoWithRetry(base64Image);
     };
 
-    async function checkPhoto(base64Image) {
+    async function checkPhotoWithRetry(base64Image, attempt = 1) {
+        const maxAttempts = 3;
+
         if (!model) {
             resultMessage.textContent = "❌ ИИ недоступен.";
             resultMessage.className = 'result-message error';
             document.getElementById('startBtn').style.display = 'inline-block';
             return;
         }
+
         const task = tasks[currentTaskIndex];
         const prompt = task.prompt;
         const imagePart = { inlineData: { data: base64Image, mimeType: "image/jpeg" } };
@@ -592,8 +595,21 @@
                 document.getElementById('startBtn').style.display = 'inline-block';
             }
         } catch (error) {
-            console.error("Ошибка ИИ:", error);
-            resultMessage.textContent = "❌ Ошибка: " + error.message;
+            console.error(`Попытка ${attempt} не удалась:`, error);
+
+            const isServerOverload = error.message && (error.message.includes('500') || error.message.includes('high demand'));
+
+            if (isServerOverload && attempt < maxAttempts) {
+                resultMessage.innerHTML = `<div class="loader"></div> Сервер загружен, пробуем снова (${attempt}/${maxAttempts})...`;
+                await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+                return checkPhotoWithRetry(base64Image, attempt + 1);
+            }
+
+            if (isServerOverload) {
+                resultMessage.textContent = "❌ Сервер временно перегружен. Попробуй сделать снимок ещё раз через минуту.";
+            } else {
+                resultMessage.textContent = "❌ Ошибка: " + error.message;
+            }
             resultMessage.className = 'result-message error';
             document.getElementById('startBtn').style.display = 'inline-block';
         }
