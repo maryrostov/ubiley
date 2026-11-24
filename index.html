@@ -122,15 +122,24 @@
         .progress-node.completed span { display: none; }
 
         /* ===== ЭКРАНЫ (ПЕРЕКЛЮЧЕНИЕ) ===== */
+        /* Вот тут я убрал display: none для всех экранов и добавил строгое скрытие */
         .screen {
             flex: 1;
-            display: none;
+            display: none !important; /* Жестко скрываем все экраны */
             flex-direction: column;
             padding: 20px;
             overflow-y: auto;
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
-        .screen.active { display: flex; }
+
+        /* Показываем ТОЛЬКО тот экран, у которого есть класс active */
+        .screen.active {
+            display: flex !important;
+        }
 
         /* ===== ГЛАВНЫЙ ЭКРАН ===== */
         .hero-screen {
@@ -253,7 +262,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            padding-top: 80px; /* Отступ под прогресс-бар */
+            padding-top: 0; /* Убрал отступ, так как прогресс-бар скрывается перед чатом */
         }
 
         .chat-header {
